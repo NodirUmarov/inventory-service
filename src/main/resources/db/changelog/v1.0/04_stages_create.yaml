@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04_product_passport_create
+      author: NedUmarov
+      changes:
+        - createTable:
+            schemaName: inventory_service
+            tableName: stages
+            remarks: Table for storing product's base data
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: model
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stage_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: previous_stage
+                  type: BIGINT
+              - column:
+                  name: next_stage
+                  type: BIGINT
+
+        - addForeignKeyConstraint:
+            constraintName: stage_has_previous_stage
+            baseTableSchemaName: inventory_service
+            baseTableName: stages
+            baseColumnNames: previous_stage
+            referencedTableSchemaName: inventory_service
+            referencedTableName: stages
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            constraintName: stage_has_next_stage
+            baseTableSchemaName: inventory_service
+            baseTableName: stages
+            baseColumnNames: next_stage
+            referencedTableSchemaName: inventory_service
+            referencedTableName: stages
+            referencedColumnNames: id
+
+      rollback:
+        - dropTable:
+            schemaName: inventory_service
+            tableName: stages

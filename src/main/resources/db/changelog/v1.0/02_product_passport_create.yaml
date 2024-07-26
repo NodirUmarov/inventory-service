@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02_product_passport_create
+      author: NedUmarov
+      changes:
+        - createTable:
+            schemaName: inventory_service
+            tableName: product_passport
+            remarks: Table for storing product's base data
+            columns:
+              - column:
+                  name: qr_id
+                  type: VARCHAR(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  name: hand_overed_at
+                  type: TIMESTAMP
+              - column:
+                  name: model
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: joined_with
+                  type: VARCHAR(255)
+              - column:
+                  name: is_main
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: passport_status
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: product_passport_has_joined_to_another_passport
+            baseTableSchemaName: inventory_service
+            baseTableName: product_passport
+            baseColumnNames: joined_with
+            referencedTableSchemaName: inventory_service
+            referencedTableName: product_passport
+            referencedColumnNames: qr_id
+
+
+      rollback:
+        - dropTable:
+            schemaName: inventory_service
+            tableName: product_passport

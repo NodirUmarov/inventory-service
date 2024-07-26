@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  inventory-db:
+    container_name: inventory-db
+    image: postgres:13.4
+    environment:
+      POSTGRES_DB: 'inventory_db'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      - "5432:5432"
+    volumes:
+        - inventory-db-data:/var/lib/postgresql/data
+    networks:
+      - inventory-net
+
+  inventory:
+    container_name: inventory
+    image: inventory:latest
+    environment:
+      DB_URL: jdbc:postgresql://inventory-db:5432/inventory_db
+      DB_USERNAME: user
+      DB_PASSWORD: password
+    depends_on:
+      - inventory-db
+    ports:
+      - "8081:8081"
+    networks:
+      - inventory-net
+
+  qr-scanner:
+    container_name: qr-scanner
+    image: qr-code-scanner:latest
+    environment:
+      BACKEND_API_URL: http://inventory:8081
+    ports:
+      - "80:80"
+    networks:
+      - inventory-net
+
+networks:
+  inventory-net:
+    driver: bridge
+
+volumes:
+  inventory-db-data: { }

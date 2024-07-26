@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03_scanners_create
+      author: NedUmarov
+      changes:
+        - createTable:
+            schemaName: inventory_service
+            tableName: scanners
+            remarks: White list for scanners
+            columns:
+              - column:
+                  name: hr_id
+                  type: VARCHAR(255)
+                  remarks: Unique UUID of scanner, generated and manually hardcoded into the module.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+      rollback:
+        - dropTable:
+            schemaName: inventory_service
+            tableName: scanners

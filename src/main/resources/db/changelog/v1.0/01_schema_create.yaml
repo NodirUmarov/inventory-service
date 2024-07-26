@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01_schema_create
+      author: NedUmarov
+      changes:
+        - sql:
+            sql: "CREATE SCHEMA IF NOT EXISTS inventory_service"
+      rollback:
+        - sql:
+            sql: "DROP SCHEMA IF EXISTS inventory_service CASCADE"
