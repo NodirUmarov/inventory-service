@@ -1,110 +1,57 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "EC2 with Spring App and RDS PostgreSQL"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template for Project
 
 Parameters:
-  KeyName:
-    Description: "Name of an existing EC2 KeyPair to enable SSH access to the instance"
-    Type: "AWS::EC2::KeyPair::KeyName"
-    ConstraintDescription: "must be the name of an existing EC2 KeyPair."
-  DBName:
-    Default: "inventory-db"
-    Description: "The PostgreSQL database name"
-    Type: "String"
-  DBUser:
-    Default: "admin"
-    Description: "The PostgreSQL database admin account username"
-    Type: "String"
-  DBPassword:
-    NoEcho: "true"
-    Description: "The PostgreSQL database admin account password"
-    Type: "String"
-  DBAllocatedStorage:
-    Default: "10"
-    Description: "The size of the database (Gb)"
-    Type: "Number"
-  DBInstanceClass:
-    Default: "db.t3.micro"
-    Description: "The database instance type"
-    Type: "String"
-  S3Bucket:
-    Description: "The S3 bucket where the Spring application JAR file is stored"
-    Type: "String"
-  S3Key:
-    Description: "The key of the Spring application JAR file in the S3 bucket"
-    Type: "String"
+  ProjectName:
+    Type: String
+    Default: inventory
+    Description: The name of the project.
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t3.micro
+      - t3a.micro
+    Description: EC2 instance type.
+  S3AppUri:
+    Type: String
+    Description: App S3 uri
+    Default: s3://java-app-returning-region-and-az/inventory-service-0.0.1.jar
 
 Resources:
-  MyVPC:
-    Type: "AWS::EC2::VPC"
+  EC2Instance:
+    Type: "AWS::EC2::Instance"
     Properties:
-      CidrBlock: "10.0.0.0/16"
-      Tags:
-        - Key: "Name"
-          Value: "MyVPC"
-
-  PublicSubnet:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      VpcId: !Ref "MyVPC"
-      CidrBlock: "10.0.1.0/24"
-      MapPublicIpOnLaunch: true
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      Tags:
-        - Key: "Name"
-          Value: "PublicSubnet"
-
-  InternetGateway:
-    Type: "AWS::EC2::InternetGateway"
-    Properties:
-      Tags:
-        - Key: "Name"
-          Value: "InternetGateway"
-
-  AttachGateway:
-    Type: "AWS::EC2::VPCGatewayAttachment"
-    Properties:
-      VpcId: !Ref "MyVPC"
-      InternetGatewayId: !Ref "InternetGateway"
-
-  PublicRouteTable:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref "MyVPC"
-      Tags:
-        - Key: "Name"
-          Value: "PublicRouteTable"
-
-  PublicRoute:
-    Type: "AWS::EC2::Route"
-    DependsOn: "AttachGateway"
-    Properties:
-      RouteTableId: !Ref "PublicRouteTable"
-      DestinationCidrBlock: "0.0.0.0/0"
-      GatewayId: !Ref "InternetGateway"
-
-  PublicSubnetRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      SubnetId: !Ref "PublicSubnet"
-      RouteTableId: !Ref "PublicRouteTable"
-
-  SecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Allow SSH and TCP/8080 access"
-      VpcId: !Ref "MyVPC"
-      SecurityGroupIngress:
-        - IpProtocol: "tcp"
-          FromPort: 22
-          ToPort: 22
-          CidrIp: "0.0.0.0/0"
-        - IpProtocol: "tcp"
-          FromPort: 8081
-          ToPort: 8081
-          CidrIp: "0.0.0.0/0"
-      Tags:
-        - Key: "Name"
-          Value: "InstanceSecurityGroup"
+      InstanceType: !Ref "InstanceType"
+      ImageId: "ami-0427090fd1714168b" # ami amazon linux 2023
+      IamInstanceProfile: !Ref "InstanceProfile"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - Fn::ImportValue: "db-stack-SecGr1"
+          SubnetId:
+            Fn::ImportValue: 'db-stack-PublicSubnetAId'
+      UserData:
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y java-21-amazon-corretto-devel
+          sudo dnf install postgresql15 -y
+          aws s3 cp ${S3AppUri} .
+          
+          DB_URL="jdbc:postgresql://$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstanceEndpoint'].Value" --output text):5432/$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-DBName'].Value" --output text)"
+          DB_USERNAME=$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstanceUsername'].Value" --output text)
+          DB_PASSWORD=$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstancePassword'].Value" --output text)
+          
+          echo "export DB_URL=$DB_URL" | sudo tee -a /etc/profile
+          echo "export DB_USERNAME=$DB_USERNAME" | sudo tee -a /etc/profile
+          echo "export DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/profile
+          source /etc/profile
+          
+          nohup java -jar inventory-service-0.0.1.jar  > /home/ec2-user/app.log 2>&1 &
 
   InstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
@@ -130,57 +77,16 @@ Resources:
                 Action:
                   - "s3:GetObject"
                 Resource: "arn:aws:s3:::*"
-
-  EC2Instance:
-    Type: "AWS::EC2::Instance"
-    Properties:
-      InstanceType: "t3.micro"
-      KeyName: !Ref "KeyName"
-      IamInstanceProfile: !Ref "InstanceProfile"
-      SecurityGroupIds:
-        - !Ref "SecurityGroup"
-      SubnetId: !Ref "PublicSubnet"
-      NetworkInterfaces:
-        - DeviceIndex: 0
-          AssociatePublicIpAddress: true
-          SubnetId: !Ref "PublicSubnet"
-          GroupSet:
-            - !Ref "SecurityGroup"
-      UserData:
-        Fn::Base64:
-          !Sub |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum install -y java-21-amazon-corretto-devel
-          aws s3 cp s3://${S3Bucket}/${S3Key} /home/ec2-user/app.jar
-          RDS_ENDPOINT=$(aws rds describe-db-instances --query "DBInstances[0].Endpoint.Address" --output text)
-          export DB_ENDPOINT=$RDS_ENDPOINT
-          nohup java -Dspring.datasource.url=jdbc:postgresql://${DB_ENDPOINT}/${DBName} \
-            -Dspring.datasource.username=${DBUser} \
-            -Dspring.datasource.password=${DBPassword} -jar /home/ec2-user/app.jar  > /home/ec2-user/app.log 2>&1 &
-
-  RDSDBInstance:
-    Type: "AWS::RDS::DBInstance"
-    Properties:
-      DBName: !Ref "DBName"
-      AllocatedStorage: !Ref "DBAllocatedStorage"
-      DBInstanceClass: !Ref "DBInstanceClass"
-      Engine: "postgres"
-      MasterUsername: !Ref "DBUser"
-      MasterUserPassword: !Ref "DBPassword"
-      VPCSecurityGroups:
-        - !Ref "SecurityGroup"
-      DBSubnetGroupName: !Ref "DBSubnetGroup"
-
-  DBSubnetGroup:
-    Type: "AWS::RDS::DBSubnetGroup"
-    Properties:
-      DBSubnetGroupDescription: "Subnet group for RDS DB instance"
-      SubnetIds:
-        - !Ref "PublicSubnet"
-      Tags:
-        - Key: "Name"
-          Value: "DBSubnetGroup"
+        - PolicyName: "EC2CFListExports"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "cloudformation:Describe*"
+                  - "cloudformation:List*"
+                  - "cloudformation:Get*"
+                Resource: "*"
 
 Outputs:
   InstanceId:
@@ -189,9 +95,3 @@ Outputs:
   PublicIP:
     Description: "Public IP address of the EC2 instance"
     Value: !GetAtt "EC2Instance.PublicIp"
-  RDSInstanceEndpoint:
-    Description: "RDS Instance Endpoint"
-    Value: !GetAtt "RDSDBInstance.Endpoint.Address"
-  RDSInstancePort:
-    Description: "RDS Instance Port"
-    Value: !GetAtt "RDSDBInstance.Endpoint.Port"
