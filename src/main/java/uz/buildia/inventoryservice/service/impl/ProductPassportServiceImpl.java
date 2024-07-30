@@ -57,15 +57,7 @@ public class ProductPassportServiceImpl implements ProductPassportService {
     productPassport.setPassportStatus(PassportStatus.CLOSED);
     productPassport.setHandOveredAt(LocalDateTime.now());
 
-    PassportHistorySetRequest passportHistorySetRequest =
-        PassportHistorySetRequest.builder()
-            .productPassportDto(productPassportMapper.toDto(productPassport))
-            .scannerId(scannerId)
-            .build();
-
-    passportStageHistoryMapper.toEntity(
-        passportStageHistoryService.save(passportHistorySetRequest));
-    return productPassport;
+    return productPassportRepository.save(productPassport);
   }
 
   private ProductPassport createNewPassport(ReportRequest reportRequest, String scannerId) {
