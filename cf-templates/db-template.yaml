@@ -145,6 +145,36 @@ Resources:
           FromPort: 5432
           ToPort: 5432
           SourceSecurityGroupId: !Ref EC2SecurityGroup
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.176/28    # yandex data-lense ip ranges
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.192/28
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.208/28
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.128/28
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.144/28
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 178.154.242.160/28
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 130.193.60.0/28
+
+
       Tags:
         - Key: Name
           Value: !Sub "${ProjectName}-RDSSecGr"
@@ -160,56 +190,50 @@ Resources:
         - Key: "Name"
           Value: "DBSubnetGroup"
 
-    RDSDBInstance:
-      Type: "AWS::RDS::DBInstance"
-      Properties:
-        DBName: !Ref "DBName"
-        AllocatedStorage: !Ref "DBAllocatedStorage"
-        DBInstanceClass: !Ref "DBInstanceClass"
-        Engine: "postgres"
-        MasterUsername: !Ref "DBUsername"
-        MasterUserPassword: !Ref "DBPassword"
-        VPCSecurityGroups:
-          - !Ref "RDSInstanceSecurityGroup"
-        DBSubnetGroupName: !Ref "DBSubnetGroup"
+  RDSDBInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBName: !Ref "DBName"
+      AllocatedStorage: !Ref "DBAllocatedStorage"
+      DBInstanceClass: !Ref "DBInstanceClass"
+      Engine: "postgres"
+      MasterUsername: !Ref "DBUsername"
+      MasterUserPassword: !Ref "DBPassword"
+      VPCSecurityGroups:
+        - !Ref "RDSInstanceSecurityGroup"
+      DBSubnetGroupName: !Ref "DBSubnetGroup"
 
-  Outputs:
-    SecurityGroupId:
-      Description: Security Group ID
-      Value: !Ref EC2SecurityGroup
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-SecGr1'
-    VPCId:
-      Description: VPC ID
-      Value: !Ref VPC
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-VPCId'
-    InternetGatewayId:
-      Description: Internet Gateway ID
-      Value: !Ref InternetGateway
-    PublicSubnetAId:
-      Description: Public Subnet A ID
-      Value: !Ref PublicSubnetA
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-PublicSubnetAId'
-    PublicSubnetBId:
-      Description: Public Subnet B ID
-      Value: !Ref PublicSubnetB
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-PublicSubnetBId'
-    RDSInstanceEndpoint:
-      Description: Endpoint of the RDS instance
-      Value: !GetAtt RDSDBInstance.Endpoint.Address
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-RDSInstanceEndpoint'
-    DBName:
-      Description: Db name
-      Value: !Ref DBName
-      Export:
-        Name:
-          'Fn::Sub': '${AWS::StackName}-DBName'
+Outputs:
+  SecurityGroupId:
+    Description: Security Group ID
+    Value: !Ref EC2SecurityGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-SecGr1'
+  VPCId:
+    Description: VPC ID
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '${AWS::StackName}-VPCId'
+  InternetGatewayId:
+    Description: Internet Gateway ID
+    Value: !Ref InternetGateway
+  PublicSubnetAId:
+    Description: Public Subnet A ID
+    Value: !Ref PublicSubnetA
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnetAId'
+  PublicSubnetBId:
+    Description: Public Subnet B ID
+    Value: !Ref PublicSubnetB
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnetBId'
+  RDSInstanceEndpoint:
+    Description: Endpoint of the RDS instance
+    Value: !GetAtt RDSDBInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-RDSInstanceEndpoint'
+  DBName:
+    Description: Db name
+    Value: !Ref DBName
+    Export:
+      Name: !Sub '${AWS::StackName}-DBName'
