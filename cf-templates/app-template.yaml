@@ -14,6 +14,18 @@ Parameters:
       - t3.micro
       - t3a.micro
     Description: EC2 instance type.
+  DBUsername:
+    Type: String
+    NoEcho: true
+    Description: The database admin account username.
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: The database admin account password.
   S3AppUri:
     Type: String
     Description: App S3 uri
@@ -43,8 +55,8 @@ Resources:
           aws s3 cp ${S3AppUri} .
           
           DB_URL="jdbc:postgresql://$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstanceEndpoint'].Value" --output text):5432/$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-DBName'].Value" --output text)"
-          DB_USERNAME=$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstanceUsername'].Value" --output text)
-          DB_PASSWORD=$(aws cloudformation list-exports --query "Exports[?Name=='db-stack-RDSInstancePassword'].Value" --output text)
+          DB_USERNAME=${DB_USERNAME}
+          DB_PASSWORD=${DB_PASSWORD}
           
           echo "export DB_URL=$DB_URL" | sudo tee -a /etc/profile
           echo "export DB_USERNAME=$DB_USERNAME" | sudo tee -a /etc/profile

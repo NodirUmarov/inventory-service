@@ -8,4 +8,5 @@ To connect to db run
 ```
 psql -U ${username} -d ${db_name} -h ${db_endpoint}
 ```
-
+to get certificate for psql to securely connect to db from data lense
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
