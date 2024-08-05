@@ -29,7 +29,7 @@ Parameters:
   S3AppUri:
     Type: String
     Description: App S3 uri
-    Default: s3://java-app-returning-region-and-az/inventory-service-0.0.1.jar
+    Default: s3://buildia-inventory-bucket-service/inventory-service-0.0.1.jar
 
 Resources:
   EC2Instance:
