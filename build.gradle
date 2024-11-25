@@ -49,7 +49,7 @@ dependencies {
     unitTestAnnotationProcessor 'org.projectlombok:lombok'
     unitTestImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    itTestRuntimeOnly 'org.postgresql:postgresql'
+    itTestRuntimeOnly 'mysql:mysql-connector-java'
     itTestCompileOnly 'org.projectlombok:lombok'
     itTestAnnotationProcessor 'org.projectlombok:lombok'
 
