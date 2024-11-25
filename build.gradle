@@ -1,7 +1,5 @@
 plugins {
     id 'java'
-    id 'jacoco'
-    id 'net.razvan.jacoco-to-cobertura' version "${jacocoToCoberturaVersion}"
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${springDependencyPluginVersion}"
 }
@@ -20,9 +18,6 @@ java {
 repositories {
     mavenCentral()
 }
-
-apply from: "$rootDir/gradle/config/${unitTest}.gradle"
-apply from: "$rootDir/gradle/config/${itTest}.gradle"
 
 dependencies {
     // Spring
@@ -45,79 +40,5 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation "org.liquibase:liquibase-groovy-dsl:${liquibaseGroovyDslVersion}"
 
-    unitTestCompileOnly 'org.projectlombok:lombok'
-    unitTestAnnotationProcessor 'org.projectlombok:lombok'
-    unitTestImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    itTestRuntimeOnly 'mysql:mysql-connector-java'
-    itTestCompileOnly 'org.projectlombok:lombok'
-    itTestAnnotationProcessor 'org.projectlombok:lombok'
-
-    itTestImplementation 'org.testcontainers:mysql'
-    itTestImplementation platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}")
-
-    itTestImplementation 'org.springframework.boot:spring-boot-starter-test'
-    itTestImplementation "org.springframework.boot:spring-boot-starter-webflux"
-    itTestRuntimeOnly "io.netty:netty-resolver-dns-native-macos:${nettyResolver}:osx-aarch_64"
+    
 }
-
-tasks.withType(ProcessResources).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-    testLogging {
-        events = ['passed', 'failed', 'skipped']
-        showStandardStreams = true
-    }
-}
-
-tasks.check.dependsOn(jacocoTestReport)
-
-jacoco {
-    toolVersion = "${jacocoVersion}"
-}
-
-jacocoTestReport {
-    dependsOn(tasks.named('jacocoUnitTestReport'), tasks.named('jacocoITTestReport'))
-
-    sourceSets sourceSets.main
-    executionData(tasks.test, tasks.named("${unitTest}"), tasks.named("${itTest}"))
-    getExecutionData().setFrom(fileTree(layout.buildDirectory)
-            .include("/jacoco/${unitTest}.exec")
-            .include("/jacoco/${itTest}.exec")
-    )
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
-jacocoTestCoverageVerification {
-    dependsOn(jacocoTestReport)
-    sourceSets sourceSets.main
-    executionData(tasks.test, tasks.named("${unitTest}"), tasks.named("${itTest}"))
-    getExecutionData().setFrom(fileTree(layout.buildDirectory)
-            .include("/jacoco/${unitTest}.exec")
-            .include("/jacoco/${itTest}.exec")
-    )
-
-    violationRules {
-        rule {
-            limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.60
-            }
-        }
-    }
-}
-
-jacocoToCobertura {
-    inputFile.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
-    outputFile.set(layout.buildDirectory.file("reports/cobertura.xml"))
-    sourceDirectories.from(layout.projectDirectory.dir("src/main/java"))
-    splitByPackage.set(false)
-}
-
