@@ -27,7 +27,7 @@ public class ProductPassportController {
   }
 
   @GetMapping
-  public ResponseEntity<String> test {
+  public ResponseEntity<String> test() {
     return ResponseEntity.ok("test");
   }
   
