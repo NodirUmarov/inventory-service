@@ -46,10 +46,15 @@ dependencies {
     
 }
 
-jar {
+bootJar {
     manifest {
         attributes(
                 'Main-Class': 'uz.buildia.inventoryservice.InventoryServiceApplication'
         )
     }
+}
+
+// Optional: disable plain JAR if unnecessary
+jar {
+    enabled = false
 }
