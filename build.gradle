@@ -39,7 +39,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 
     // DB
-    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'mysql:mysql-connector-java'
 
     // Liquibase
     implementation 'org.liquibase:liquibase-core'
@@ -53,7 +53,7 @@ dependencies {
     itTestCompileOnly 'org.projectlombok:lombok'
     itTestAnnotationProcessor 'org.projectlombok:lombok'
 
-    itTestImplementation 'org.testcontainers:postgresql'
+    itTestImplementation 'org.testcontainers:mysql'
     itTestImplementation platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}")
 
     itTestImplementation 'org.springframework.boot:spring-boot-starter-test'
