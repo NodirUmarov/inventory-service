@@ -45,3 +45,11 @@ dependencies {
 
     
 }
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'uz.buildia.inventoryservice.InventoryServiceApplication'
+        )
+    }
+}
