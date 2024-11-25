@@ -34,7 +34,8 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 
     // DB
-    runtimeOnly 'mysql:mysql-connector-java:8.1.0'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation 'mysql:mysql-connector-java:8.0.33'
 
     // Liquibase
     implementation 'org.liquibase:liquibase-core'
