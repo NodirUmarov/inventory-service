@@ -4,7 +4,7 @@ databaseChangeLog:
       author: NedUmarov
       changes:
         - createTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: product_passport
             remarks: Table for storing product's base data
             columns:
@@ -46,15 +46,15 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             constraintName: product_passport_has_joined_to_another_passport
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: product_passport
             baseColumnNames: joined_with
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: product_passport
             referencedColumnNames: qr_id
 
 
       rollback:
         - dropTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: product_passport

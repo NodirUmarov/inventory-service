@@ -29,7 +29,7 @@ import uz.buildia.inventoryservice.constants.status.PassportHistoryStatus;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "passport_stage_history", schema = "inventory_service")
+@Table(name = "passport_stage_history", schema = "utj7l3hq3han256u")
 public class PassportStageHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,7 +4,7 @@ databaseChangeLog:
       author: NedUmarov
       changes:
         - createTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: stages
             remarks: Table for storing product's base data
             columns:
@@ -34,23 +34,23 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             constraintName: stage_has_previous_stage
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: stages
             baseColumnNames: previous_stage
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: stages
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
             constraintName: stage_has_next_stage
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: stages
             baseColumnNames: next_stage
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: stages
             referencedColumnNames: id
 
       rollback:
         - dropTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: stages

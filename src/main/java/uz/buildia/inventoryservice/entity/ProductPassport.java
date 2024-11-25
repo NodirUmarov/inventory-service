@@ -25,7 +25,7 @@ import uz.buildia.inventoryservice.constants.status.PassportStatus;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "product_passport", schema = "inventory_service")
+@Table(name = "product_passport", schema = "utj7l3hq3han256u")
 public class ProductPassport {
     @Id
     @Column(name = "qr_id", nullable = false)

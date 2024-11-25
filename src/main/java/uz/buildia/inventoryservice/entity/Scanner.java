@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "scanners", schema = "inventory_service")
+@Table(name = "scanners", schema = "utj7l3hq3han256u")
 public class Scanner {
     @Id
     @Column(name = "hr_id", nullable = false)

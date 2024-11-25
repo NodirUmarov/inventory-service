@@ -4,7 +4,7 @@ databaseChangeLog:
       author: NedUmarov
       changes:
         - createTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: passport_stage_history
             remarks: Table for storing product's stage change history
             columns:
@@ -54,32 +54,32 @@ databaseChangeLog:
 
         - addForeignKeyConstraint:
             constraintName: passport_history_has_passport
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: passport_stage_history
             baseColumnNames: qr_id
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: product_passport
             referencedColumnNames: qr_id
 
         - addForeignKeyConstraint:
             constraintName: passport_history_has_scanner
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: passport_stage_history
             baseColumnNames: scanner_id
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: scanners
             referencedColumnNames: hr_id
 
         - addForeignKeyConstraint:
             constraintName: passport_history_has_stage
-            baseTableSchemaName: inventory_service
+            baseTableSchemaName: utj7l3hq3han256u
             baseTableName: passport_stage_history
             baseColumnNames: stage_id
-            referencedTableSchemaName: inventory_service
+            referencedTableSchemaName: utj7l3hq3han256u
             referencedTableName: stages
             referencedColumnNames: id
 
       rollback:
         - dropTable:
-            schemaName: inventory_service
+            schemaName: utj7l3hq3han256u
             tableName: passport_stage_history

@@ -24,7 +24,7 @@ import lombok.ToString.Exclude;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "stages", schema = "inventory_service")
+@Table(name = "stages", schema = "utj7l3hq3han256u")
 public class Stage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

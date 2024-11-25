@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:${JAWSDB_URL}
-    username: ${JAWSDB_USERNAME}
-    password: ${JAWSDB_PASSWORD}
+    url: jdbc:mysql://m60mxazb4g6sb4nn.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306/utj7l3hq3han256u
+    username: pyaowdbtuav4uxrb
+    password: oe21j0png700yjvu
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
